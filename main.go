@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/ycchuang99/todo-list/models"
 	"github.com/ycchuang99/todo-list/controllers"
