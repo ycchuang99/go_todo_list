@@ -128,7 +128,11 @@ func PutTodoList(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	var count int
-	models.DB.QueryRow("SELECT COUNT(*) FROM todo_list WHERE id = ?", id).Scan(&count)
+	err := models.DB.QueryRow("SELECT COUNT(*) FROM todo_list WHERE id = ?", id).Scan(&count)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
 
 	if count == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Not Found"})
@@ -167,7 +171,11 @@ func DoneTodoList(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	var count int
-	models.DB.QueryRow("SELECT COUNT(*) FROM todo_list WHERE id = ?", id).Scan(&count)
+	err := models.DB.QueryRow("SELECT COUNT(*) FROM todo_list WHERE id = ?", id).Scan(&count)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
 
 	if count == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Not Found"})

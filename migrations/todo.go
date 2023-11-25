@@ -7,7 +7,7 @@ import (
 func Migrate() {
 	models.ConnectDatabase()
 
-	models.DB.Query(`
+	_, err := models.DB.Query(`
 		CREATE TABLE IF NOT EXISTS todo_list (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title VARCHAR(255) NOT NULL,
@@ -15,4 +15,8 @@ func Migrate() {
 			done_at TEXT
 		)
 	`)
+
+	if err != nil {
+		panic(err.Error())
+	}
 }

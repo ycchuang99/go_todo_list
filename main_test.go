@@ -32,7 +32,10 @@ func SetUpTestEnvironment() {
 }
 
 func TearDownTestDatabase() {
-    models.DB.Exec("TRUNCATE TABLE todo_list")
+    _, err := models.DB.Exec("TRUNCATE TABLE todo_list")
+    if err != nil {
+        log.Fatal("Error truncating todo_list table")
+    }
 }
 
 func TestGetTodoList(t *testing.T) {
@@ -41,9 +44,18 @@ func TestGetTodoList(t *testing.T) {
     SetUpTestEnvironment()
     models.ConnectDatabase()
 
-    models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
-    models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title 2", "Test Description 2")
-    models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title 3", "Test Description 3")
+    _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
+    if err != nil {
+        t.Errorf("Failed to insert todo_list: %v", err)
+    }
+    _, err = models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title 2", "Test Description 2")
+    if err != nil {
+        t.Errorf("Failed to insert todo_list: %v", err)
+    }
+    _, err = models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title 3", "Test Description 3")
+    if err != nil {
+        t.Errorf("Failed to insert todo_list: %v", err)
+    }
 
     router.GET("/api/v1/todo-list", controllers.GetTodoList)
 
@@ -52,7 +64,7 @@ func TestGetTodoList(t *testing.T) {
     router.ServeHTTP(w, req)
 
     var jsonResponse map[string]interface{}
-    err := json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+    err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
     if err != nil {
         t.Errorf("Failed to unmarshal response body: %v", err)
     }
@@ -112,7 +124,10 @@ func TestDeleteTodoList(t *testing.T) {
 
     models.ConnectDatabase()
 
-    models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
+    _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
+    if err != nil {
+        t.Errorf("Failed to insert todo_list: %v", err)
+    }
 
     router.DELETE("/api/v1/todo-list/:id", controllers.DeleteTodoList)
 
