@@ -3,23 +3,28 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 
-	// _ "github.com/joho/godotenv/autoload"
 	"github.com/joho/godotenv"
 
-	"github.com/ycchuang99/todo-list/models"
 	"github.com/ycchuang99/todo-list/controllers"
+	"github.com/ycchuang99/todo-list/models"
 )
 
-func main() {
-	router := gin.Default()
-
-	err := godotenv.Load()
+func InitEnv() {
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+}
+
+func main() {
+	InitEnv()
+	router := gin.Default()
+	gin.SetMode(os.Getenv("GIN_MODE"))
+
 	models.ConnectDatabase()
 
 	router.GET("/api/v1/todo-list", controllers.GetTodoList)
