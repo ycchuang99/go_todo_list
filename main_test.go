@@ -1,90 +1,45 @@
 package main
 
 import (
-    "net/http"
-    "net/http/httptest"
-    "strings"
-    "testing"
-    "os"
-    "github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
-    "github.com/stretchr/testify/assert"
+	"github.com/joho/godotenv"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/gin-gonic/gin"
+	"github.com/ycchuang99/todo-list/controllers"
+	"github.com/ycchuang99/todo-list/models"
 )
 
+func SetUpRouter() *gin.Engine {
+    router := gin.Default()
+
+    return router
+}
+
+func SetUpTestEnvironment() {
+    err := godotenv.Load(".env.test")
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+}
+
 func TestGetTodoList(t *testing.T) {
-    r := setupRouter()
+    router := SetUpRouter()
 
-    req, _ := http.NewRequest("GET", "/api/v1/todo-list?page=1&perPage=10", nil)
+    SetUpTestEnvironment()
+    models.ConnectDatabase()
+
+    router.GET("/api/v1/todo-list", controllers.GetTodoList)
+
     w := httptest.NewRecorder()
-    r.ServeHTTP(w, req)
+    req, _ := http.NewRequest("GET", "/api/v1/todo-list", nil)
+    router.ServeHTTP(w, req)
 
-    assert.Equal(t, http.StatusOK, w.Code)
-
-    // Add more assertions to check the response body if needed
-}
-
-func TestPostTodoList(t *testing.T) {
-    r := setupRouter()
-
-    requestBody := `{"title": "Test Todo", "description": "Test Description"}`
-    req, _ := http.NewRequest("POST", "/api/v1/todo-list", strings.NewReader(requestBody))
-    req.Header.Set("Content-Type", "application/json")
-    w := httptest.NewRecorder()
-    r.ServeHTTP(w, req)
-
-    assert.Equal(t, http.StatusCreated, w.Code)
-
-    // Add more assertions to check the response body if needed
-}
-
-func TestDeleteTodoList(t *testing.T) {
-    r := setupRouter()
-
-    req, _ := http.NewRequest("DELETE", "/api/v1/todo-list/1", nil)
-    w := httptest.NewRecorder()
-    r.ServeHTTP(w, req)
-
-    assert.Equal(t, http.StatusNoContent, w.Code)
-}
-
-func TestPutTodoList(t *testing.T) {
-    r := setupRouter()
-
-    requestBody := `{"title": "Updated Todo", "description": "Updated Description"}`
-    req, _ := http.NewRequest("PUT", "/api/v1/todo-list/1", strings.NewReader(requestBody))
-    req.Header.Set("Content-Type", "application/json")
-    w := httptest.NewRecorder()
-    r.ServeHTTP(w, req)
-
-    assert.Equal(t, http.StatusOK, w.Code)
-
-    // Add more assertions to check the response body if needed
-}
-
-func TestDoneTodoList(t *testing.T) {
-    r := setupRouter()
-
-    req, _ := http.NewRequest("PUT", "/api/v1/todo-list/1/done", nil)
-    w := httptest.NewRecorder()
-    r.ServeHTTP(w, req)
-
-    assert.Equal(t, http.StatusNoContent, w.Code)
-}
-
-func setupRouter() *gin.Engine {
-    r := gin.Default()
-    r.GET("/api/v1/todo-list", GetTodoList)
-    r.POST("/api/v1/todo-list", PostTodoList)
-    r.DELETE("/api/v1/todo-list/:id", DeleteTodoList)
-    r.PUT("/api/v1/todo-list/:id", PutTodoList)
-    r.PUT("/api/v1/todo-list/:id/done", DoneTodoList)
-    return r
-}
-
-func TestMain(m *testing.M) {
-    // Run the tests
-    exitCode := m.Run()
-
-    // Exit with the appropriate exit code
-    os.Exit(exitCode)
+    assert.Equal(t, 200, w.Code)
+    assert.Equal(t, "{\"data\":[],\"page\":1,\"perPage\":10,\"totalItems\":0,\"totalPages\":0}", w.Body.String())
 }

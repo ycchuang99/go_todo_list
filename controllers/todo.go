@@ -24,7 +24,7 @@ func GetTodoList(c *gin.Context) {
 
 	offset := (page - 1) * perPage
 
-	var todoList []models.Todo
+	var todoList []models.Todo = []models.Todo{}
 	var totalItems int
 
 	err = models.DB.QueryRow("SELECT COUNT(*) FROM todo_list").Scan(&totalItems)
