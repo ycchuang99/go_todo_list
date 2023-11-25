@@ -15,7 +15,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ycchuang99/todo-list/controllers"
 	"github.com/ycchuang99/todo-list/models"
+    "github.com/ycchuang99/todo-list/migrations"
 )
+
+func SetUpTest() {
+    SetUpTestEnvironment()
+    models.ConnectDatabase()
+}
 
 func SetUpRouter() *gin.Engine {
     router := gin.Default()
@@ -32,17 +38,19 @@ func SetUpTestEnvironment() {
 }
 
 func TearDownTestDatabase() {
-    _, err := models.DB.Exec("TRUNCATE TABLE todo_list")
+    _, err := models.DB.Exec("DROP TABLE todo_list")
     if err != nil {
         log.Fatal("Error truncating todo_list table")
     }
 }
 
 func TestGetTodoList(t *testing.T) {
+    SetUpTestEnvironment()
+
     router := SetUpRouter()
 
-    SetUpTestEnvironment()
     models.ConnectDatabase()
+    migrations.Migrate()
 
     _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
     if err != nil {
@@ -93,6 +101,7 @@ func TestPostTodoList(t *testing.T) {
     router := SetUpRouter()
 
     models.ConnectDatabase()
+    migrations.Migrate()
 
     router.POST("/api/v1/todo-list", controllers.PostTodoList)
 
@@ -123,6 +132,7 @@ func TestDeleteTodoList(t *testing.T) {
     router := SetUpRouter()
 
     models.ConnectDatabase()
+    migrations.Migrate()
 
     _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
     if err != nil {
@@ -153,6 +163,7 @@ func TestPutTodoList(t *testing.T) {
     router := SetUpRouter()
 
     models.ConnectDatabase()
+    migrations.Migrate()
 
     _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
     if err != nil {
