@@ -18,6 +18,8 @@ jobs:
       DB_DATABASE: test
       DB_USER: root
       DB_PASSWORD: root
+      DB_HOST: localhost
+      DB_PORT: 3306
 
     steps:
     - uses: actions/checkout@v3
@@ -36,7 +38,15 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -v ./...
+      run: |
+        touch .env
+        echo DB_DATABASE=${{ env.DB_DATABASE }} >> .env
+        echo DB_USER=${{ env.DB_USER }} >> .env
+        echo DB_PASSWORD=${{ env.DB_PASSWORD }} >> .env
+        echo DB_HOST=${{ env.DB_HOST }} >> .env
+        echo DB_PORT=${{ env.DB_PORT }} >> .env
+
+        go test -v ./...
 
     - name: Artifacts
       uses: actions/upload-artifact@v2
