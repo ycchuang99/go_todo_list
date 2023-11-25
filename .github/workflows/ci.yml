@@ -41,16 +41,14 @@ jobs:
 
     - name: Test
       run: |
-        touch .env
+        touch .env.test
         echo "DB_DATABASE=${{ env.DB_DATABASE }}" >> .env
         echo "DB_USER=${{ env.DB_USER }}" >> .env
         echo "DB_PASSWORD=${{ env.DB_PASSWORD }}" >> .env
         echo "DB_HOST=${{ env.DB_HOST }}" >> .env
         echo "DB_PORT=${{ env.DB_PORT }}" >> .env
-        ls -la
-        cat .env
 
-        go test -v ./...
+        go test -v ./tests
 
     - name: Build
       run: go build -v ./...

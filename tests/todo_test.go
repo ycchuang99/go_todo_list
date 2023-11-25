@@ -1,4 +1,4 @@
-package main
+package tests
 
 import (
 	"log"
@@ -25,7 +25,7 @@ func SetUpRouter() *gin.Engine {
 }
 
 func SetUpTestEnvironment() {
-    err := godotenv.Load(".env.test")
+    err := godotenv.Load("../.env.test")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
