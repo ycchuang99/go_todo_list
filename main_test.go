@@ -138,7 +138,10 @@ func TestDeleteTodoList(t *testing.T) {
     assert.Equal(t, 204, w.Code)
 
     var count int
-    models.DB.QueryRow("SELECT COUNT(*) FROM todo_list").Scan(&count)
+    err = models.DB.QueryRow("SELECT COUNT(*) FROM todo_list").Scan(&count)
+    if err != nil {
+        t.Errorf("Failed to count todo_list: %v", err)
+    }
     assert.Equal(t, 0, count)
 
     TearDownTestDatabase()
@@ -151,7 +154,10 @@ func TestPutTodoList(t *testing.T) {
 
     models.ConnectDatabase()
 
-    models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
+    _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
+    if err != nil {
+        t.Errorf("Failed to insert todo_list: %v", err)
+    }
 
     router.PUT("/api/v1/todo-list/:id", controllers.PutTodoList)
 
