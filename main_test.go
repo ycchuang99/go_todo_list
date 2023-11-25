@@ -170,7 +170,7 @@ func TestPutTodoList(t *testing.T) {
     router.ServeHTTP(w, req)
 
     var jsonResponse map[string]interface{}
-    err := json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+    err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
     if err != nil {
         t.Errorf("Failed to unmarshal response body: %v", err)
     }
