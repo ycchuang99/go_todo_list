@@ -18,6 +18,12 @@ import (
     "github.com/ycchuang99/todo-list/migrations"
 )
 
+func TestMain(m *testing.M) {
+    SetUpTest()
+    code := m.Run()
+    os.Exit(code)
+}
+
 func SetUpTest() {
     SetUpTestEnvironment()
     models.ConnectDatabase()
@@ -45,11 +51,8 @@ func TearDownTestDatabase() {
 }
 
 func TestGetTodoList(t *testing.T) {
-    SetUpTestEnvironment()
-
     router := SetUpRouter()
 
-    models.ConnectDatabase()
     migrations.Migrate()
 
     _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
@@ -96,11 +99,8 @@ func TestGetTodoList(t *testing.T) {
 }
 
 func TestPostTodoList(t *testing.T) {
-    SetUpTestEnvironment()
-
     router := SetUpRouter()
 
-    models.ConnectDatabase()
     migrations.Migrate()
 
     router.POST("/api/v1/todo-list", controllers.PostTodoList)
@@ -127,11 +127,8 @@ func TestPostTodoList(t *testing.T) {
 }
 
 func TestDeleteTodoList(t *testing.T) {
-    SetUpTestEnvironment()
-
     router := SetUpRouter()
 
-    models.ConnectDatabase()
     migrations.Migrate()
 
     _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
@@ -158,11 +155,8 @@ func TestDeleteTodoList(t *testing.T) {
 }
 
 func TestPutTodoList(t *testing.T) {
-    SetUpTestEnvironment()
-
     router := SetUpRouter()
 
-    models.ConnectDatabase()
     migrations.Migrate()
 
     _, err := models.DB.Exec("INSERT INTO todo_list (title, description) VALUES (?, ?)", "Test Title", "Test Description")
