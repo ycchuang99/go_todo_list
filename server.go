@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/joho/godotenv"
 
 	"github.com/ycchuang99/todo-list/controllers"
+	"github.com/ycchuang99/todo-list/middleware"
 	"github.com/ycchuang99/todo-list/models"
 )
 
@@ -23,7 +23,7 @@ func InitEnv() {
 func main() {
 	InitEnv()
 	router := gin.Default()
-	gin.SetMode(os.Getenv("GIN_MODE"))
+	router.Use(middleware.Logger())
 
 	models.ConnectDatabase()
 
